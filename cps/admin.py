@@ -1633,7 +1633,17 @@ def import_ldap_users():
             user = username.decode('utf-8')
         else:
             user = username
-        if '=' in user:
+
+        if 'distinguishedName' in config.config_ldap_member_user_object:
+            # If the user object will be looked up by its DN, then do not
+            # try to to extract a uid from the user string.  This is useful
+            # for AD where the uid is not part of this string.
+            #
+            # ex. CN=John Doe,OU=Users,DC=ad,DC=example,DC=com
+            user_identifier = user
+            query_filter = config.config_ldap_member_user_object
+
+        elif '=' in user:
             # if member object field is empty take user object as filter
             if config.config_ldap_member_user_object:
                 query_filter = config.config_ldap_member_user_object
